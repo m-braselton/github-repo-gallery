@@ -2,6 +2,9 @@
 const overView = document.querySelector(".overview");
 const username = "m-braselton";
 const repoList = document.querySelector(".repo-list");
+const classRepos = document.querySelector(".repos");
+const individualRepo = document.querySelector(".repo-data");
+
 
 //create and name an async function to fetch info from github
 const githubProfile = async function() {
@@ -14,7 +17,7 @@ githubProfile();
 //function to display the fetched user information
 //create a div to contain user information
 const userInfo = function(data) {
-  var div = document.createElement("div");
+  const div = document.createElement("div");
   div.classList.add ("user-info");
   div.innerHTML = `
     <figure>
@@ -48,3 +51,39 @@ const displayInfo = function(repos) {
      repoList.append(repoItem);
   }
 };
+repoList.addEventListener("click", function(e) {
+  if(e.target.matches("h3")) {
+    const repoName = e.target.innerText;
+  specificRepoInfo(repoName);
+}
+});
+
+const specificRepoInfo = async function(repoName) {
+  const specificRepository = await fetch(`https://api.github.com/repos/${username}/${repoName}`);
+    const repoInfo = await specificRepository.json();
+    console.log(repoInfo);
+    const fetchLanguages = await fetch(repoInfo.languages_url);
+      const languageData = await fetchLanguages.json();
+      console.log(languageData);
+
+      const languages = [];
+      for (const language in languageData){
+        languages.push(languageData);
+      }
+
+      displayRepoInfo(repoInfo, languages);
+}
+const displayRepoInfo = function(repoInfo, languages) {
+individualRepo.innerHTML = "";
+individualRepo.classList.remove("hide");
+classRepos.classList.add("hide");
+const div = document.createElement("div");
+div.innerHTML = `
+<h3>Name: ${repoInfo.name} </h3>
+    <p>Description: ${repoInfo.discription}</p>
+    <p>Default Branch: ${repoInfo.default_branch}</p>
+    <p>Languages: ${languages.join(",")}</p>
+    <a class="visit" href="${repoInfo.html_url}" target="_blank" rel="noreferrer noopener">View Repo on GitHub!</a>
+    `;
+    individualRepo.append(div);
+  };
