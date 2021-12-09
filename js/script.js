@@ -4,6 +4,9 @@ const username = "m-braselton";
 const repoList = document.querySelector(".repo-list");
 const classRepos = document.querySelector(".repos");
 const individualRepo = document.querySelector(".repo-data");
+const backToReposButton = document.querySelector(".view-repos");
+const filterInput = document.querySelector(".filter-repos");
+
 
 
 //create and name an async function to fetch info from github
@@ -37,9 +40,11 @@ const userInfo = function(data) {
 //async function to get list of users repos
 const fetchRepos = async function() {
   const showRepos = await fetch(`https://api.github.com/users/${username}/repos?sort=updated&per_page=100`);
-    const repoData = await showRepos.json();
+//repoData(individualRepo)
+    const individualRepo = await showRepos.json();
     //console.log(repos);
-    displayInfo(repoData);
+//repoData(individualRepo)
+    displayInfo(individualRepo);
 };
 //create function to display info from each repo.
 const displayInfo = function(repos) {
@@ -66,9 +71,10 @@ const specificRepoInfo = async function(repoName) {
       const languageData = await fetchLanguages.json();
       console.log(languageData);
 
+//List the languages.
       const languages = [];
       for (const language in languageData){
-        languages.push(languageData);
+        languages.push(language);
       }
 
       displayRepoInfo(repoInfo, languages);
@@ -80,10 +86,15 @@ classRepos.classList.add("hide");
 const div = document.createElement("div");
 div.innerHTML = `
 <h3>Name: ${repoInfo.name} </h3>
-    <p>Description: ${repoInfo.discription}</p>
+    <p>Description: ${repoInfo.description}</p>
     <p>Default Branch: ${repoInfo.default_branch}</p>
-    <p>Languages: ${languages.join(",")}</p>
+    <p>Languages: ${languages.join(", ")}</p>
     <a class="visit" href="${repoInfo.html_url}" target="_blank" rel="noreferrer noopener">View Repo on GitHub!</a>
     `;
     individualRepo.append(div);
   };
+
+//  filterInput.addEventListener("input", function(e) {
+//    const inputValue = e.target.value;
+//    console.log(inputValue)
+//  });
